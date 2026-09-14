@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>@@TITLE@@</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#172b3a;background:#edf2f5;line-height:1.6}*{box-sizing:border-box}body{margin:0}main{max-width:960px;margin:32px auto;padding:0 20px 48px}header{border-top:5px solid #147d85;margin-bottom:24px;padding-top:16px}.eyebrow{color:#35616d;font-weight:700;font-size:.8rem;letter-spacing:.12em}h1{font-size:clamp(1.6rem,4vw,2.1rem);line-height:1.25}h2{font-size:1.3rem}.card{background:white;border:1px solid #cbd6de;border-radius:12px;padding:24px;margin:18px 0;box-shadow:0 3px 12px #17304508}.muted{color:#4e6170}.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}button{font:inherit;cursor:pointer;border:1px solid #647989;border-radius:7px;padding:9px 16px;background:white;color:#173344;min-height:44px}button:hover:not(:disabled){background:#e1f0f0}button:disabled{opacity:.5;cursor:default}button.primary{background:#146971;color:white;border-color:#146971}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #a9680a;outline-offset:3px}fieldset{border:0;padding:0;margin:20px 0}legend{font-weight:650;margin-bottom:12px}.option{display:flex;gap:12px;border:1px solid #b7c5ce;border-radius:8px;padding:14px;margin:10px 0;cursor:pointer;align-items:flex-start}.option:has(input:checked){background:#e9f6f5;border-color:#147d85}input{margin-top:6px;accent-color:#146971;flex-shrink:0}.nav-grid{display:flex;gap:7px;flex-wrap:wrap}.nav-grid button{min-width:44px;padding:5px}.nav-grid button[aria-current=true]{outline:2px solid #146971;outline-offset:1px}.answered{background:#e1f0f0}.flagged{border-bottom:4px solid #a9680a}#stem{white-space:pre-wrap}.feedback{border-left:4px solid #147d85;padding:0 16px}table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:9px;border-bottom:1px solid #d6e0e5}.score{font-size:2rem;font-weight:750;margin:6px 0}#timer{font-variant-numeric:tabular-nums;font-weight:700}a{color:#146971;overflow-wrap:anywhere}[hidden]{display:none!important}#message{color:#8b3d0a}dialog{max-width:480px;width:calc(100% - 32px);border:1px solid #b7c5ce;border-radius:12px;padding:24px}dialog::backdrop{background:#172b3a66}@media(max-width:520px){main{margin-top:16px;padding:0 12px 28px}.card{padding:16px}button{padding:8px 12px}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="eyebrow">AWS · SAA-C03 · ÔN LUYỆN</div><h1>@@TITLE@@</h1><p id="subtitle" class="muted"></p></header>
+<noscript><p class="card">Cần bật JavaScript để làm bài và chấm điểm. File không cần kết nối mạng.</p></noscript>
+<section id="intro" class="card" hidden><h2>Sẵn sàng bắt đầu</h2><p id="rules"></p><p class="muted">Chấm toàn bộ câu theo tỷ lệ đúng; không quy đổi sang điểm AWS hay dự đoán đỗ kỳ thi. Chọn nhiều phải đúng toàn bộ, không có điểm từng phần.</p><p class="muted">Tiến độ chỉ giữ trong phiên này. Tải lại hoặc đóng trang sẽ mất lượt làm.</p><button id="start" class="primary">Bắt đầu</button></section>
+<section id="summary" class="card" hidden tabindex="-1" aria-label="Kết quả"></section>
+<section id="workspace" hidden>
+<div class="toolbar"><strong id="progress"></strong><span id="timer" role="timer"></span><span id="running-score"></span></div>
+<article class="card" aria-label="Câu hỏi">
+<div class="toolbar"><span id="question-meta" class="muted"></span><button id="flag" aria-pressed="false">Đánh dấu xem lại</button></div>
+<h2 id="stem" lang="@@LANG@@" tabindex="-1"></h2>
+<fieldset id="choices"><legend id="selection-rule"></legend><div id="options" lang="@@LANG@@"></div></fieldset>
+<p id="message" role="status"></p><button id="confirm" class="primary">Xác nhận câu này</button>
+<section id="feedback" class="feedback" hidden lang="@@LANG@@"></section>
+</article>
+<div class="toolbar"><button id="previous">Câu trước</button><button id="next">Câu tiếp theo</button><button id="submit" class="primary">Nộp bài</button></div>
+<section class="card"><h2>Danh sách câu</h2><p class="muted">Nền xanh: đã chọn · Viền vàng: đánh dấu xem lại</p><nav id="question-nav" class="nav-grid" aria-label="Chuyển câu"></nav></section>
+</section>
+<dialog id="submit-dialog" aria-labelledby="submit-title"><h2 id="submit-title">Nộp bài?</h2><p id="submit-description"></p><div class="toolbar"><button id="cancel-submit">Tiếp tục làm</button><button id="finish-submit" class="primary">Xác nhận nộp bài</button></div></dialog>
+</main>
+<script id="exam-data" type="application/json">@@DATA@@</script>
+<script>@@ENGINE@@</script>
+<script>
+'use strict';
+const exam = JSON.parse(document.getElementById('exam-data').textContent);
+const engine = new QuizEngine(exam);
+const $ = id => document.getElementById(id);
+const domainNames = ['Security', 'Resilience', 'Performance', 'Cost'];
+let current = 0, interval;
+function node(tag, text, className) {
+  const el = document.createElement(tag);
+  if (text !== undefined) el.textContent = text;
+  if (className) el.className = className;
+  return el;
+}
+$('subtitle').textContent = `${exam.questions.length} câu · ${exam.mode === 'exam' ? 'Mô phỏng thi' : 'Luyện tập'} · ${exam.scope === 'focused' ? exam.focus : 'Tổng hợp bốn domain'}`;
+$('rules').textContent = exam.mode === 'exam' ? `Thời gian ${exam.duration_minutes} phút tính từ khi bấm Bắt đầu. Có thể quay lại và đánh dấu câu; đáp án chỉ hiện sau khi nộp hoặc hết giờ.` : 'Chọn đủ số đáp án rồi xác nhận để xem giải thích. Câu đã xác nhận sẽ khóa lựa chọn.';
+$('intro').hidden = false;
+function showTimer() {
+  const left = engine.remainingSeconds();
+  $('timer').textContent = left === null ? '' : `Còn ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+}
+function showSummary() {
+  const score = engine.score();
+  const section = $('summary');
+  section.replaceChildren(node('h2', engine.reason === 'timeout' ? 'Hết giờ — đã nộp bài' : 'Kết quả luyện tập'));
+  section.append(node('p', `${score.correct}/${score.total} câu đúng · ${(100 * score.correct / score.total).toFixed(1)}%`, 'score'));
+  section.append(node('p', 'Đây là tỷ lệ đúng của bài luyện, không phải điểm chuẩn hóa AWS. Câu bỏ trống hoặc chưa xác nhận trong chế độ luyện tập tính sai.', 'muted'));
+  const table = node('table'), head = node('thead'), row = node('tr');
+  ['Domain', 'Đúng / Tổng', 'Tỷ trọng thực tế'].forEach(text => { const th = node('th', text); th.scope = 'col'; row.append(th); });
+  head.append(row); table.append(head);
+  const body = node('tbody');
+  score.domains.forEach(d => {
+    const row = node('tr');
+    [domainNames[d.domain - 1], `${d.correct}/${d.total}`, `${(100 * d.total / score.total).toFixed(1)}%`].forEach(text => row.append(node('td', text)));
+    body.append(row);
+  });
+  table.append(body); section.append(table);
+  section.append(node('p', 'Domain có ít câu chưa đủ để kết luận năng lực. Xem lại câu bên dưới; gửi bảng kết quả trong chat nếu muốn luyện tiếp theo điểm yếu.', 'muted'));
+  section.hidden = false;
+}
+function render() {
+  const q = exam.questions[current], review = engine.canReview(current);
+  $('progress').textContent = `Câu ${current + 1}/${exam.questions.length}`;
+  $('question-meta').textContent = engine.finished ? `Domain ${q.primary_domain} · Task ${q.task_id}` : (exam.mode === 'practice' ? `Domain ${q.primary_domain}` : 'Chọn phương án đáp ứng tốt nhất tình huống');
+  $('stem').textContent = q.stem;
+  $('selection-rule').textContent = `Chọn ${q.correct_option_ids.length} đáp án`;
+  $('options').replaceChildren();
+  q.options.forEach(option => {
+    const label = node('label', undefined, 'option'), input = document.createElement('input');
+    input.type = q.type === 'single' ? 'radio' : 'checkbox'; input.name = 'answer'; input.value = option.id;
+    input.checked = engine.answers[current].has(option.id); input.disabled = review;
+    input.addEventListener('change', () => {
+      const accepted = engine.select(current, option.id);
+      if (engine.finished) { endUI(); return; }
+      if (!accepted) { input.checked = engine.answers[current].has(option.id); $('message').textContent = `Chỉ chọn ${q.correct_option_ids.length} đáp án; bỏ một lựa chọn trước khi đổi.`; }
+      else { $('message').textContent = ''; updateNav(); }
+    });
+    label.append(input, node('span', `${option.id}. ${option.text}`)); $('options').append(label);
+  });
+  $('confirm').hidden = exam.mode !== 'practice' || review;
+  $('flag').hidden = engine.finished;
+  $('flag').setAttribute('aria-pressed', String(engine.flags[current]));
+  $('flag').textContent = engine.flags[current] ? 'Bỏ đánh dấu' : 'Đánh dấu xem lại';
+  $('feedback').hidden = !review; $('feedback').replaceChildren();
+  if (review) {
+    const feedback = $('feedback');
+    feedback.append(node('h3', engine.isCorrect(current) ? 'Đúng' : 'Chưa đúng'));
+    if (exam.mode === 'practice' && !engine.confirmed[current]) feedback.append(node('p', 'Câu chưa xác nhận nên không được tính điểm.'));
+    feedback.append(node('p', `Đáp án đúng: ${q.correct_option_ids.join(', ')}. Bạn chọn: ${[...engine.answers[current]].join(', ') || 'Bỏ trống'}.`));
+    q.options.forEach(o => feedback.append(node('p', `${o.id} — ${q.correct_option_ids.includes(o.id) ? 'Đúng' : 'Sai'}: ${o.explanation}`)));
+    const links = node('ul');
+    q.sources.forEach(source => {
+      const li = node('li'), a = node('a', source.title); a.href = source.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      li.append(a, node('span', ` · Đối chiếu ${source.verified_on}`)); links.append(li);
+    }); feedback.append(links);
+  }
+  $('previous').disabled = current === 0;
+  $('next').disabled = current === exam.questions.length - 1;
+  $('submit').hidden = engine.finished;
+  $('message').textContent = '';
+  const score = engine.score();
+  $('running-score').textContent = score && !engine.finished ? `Đúng ${score.correct}/${score.total} · Đã xác nhận ${engine.confirmed.filter(Boolean).length}` : '';
+  updateNav(); showTimer();
+}
+function go(index) { current = index; render(); $('stem').focus(); }
+function updateNav() {
+  $('question-nav').replaceChildren();
+  exam.questions.forEach((q, index) => {
+    const button = node('button', `${index + 1}`);
+    if (engine.answers[index].size) button.classList.add('answered');
+    if (engine.flags[index]) button.classList.add('flagged');
+    button.setAttribute('aria-label', `Câu ${index + 1}${engine.flags[index] ? ', đánh dấu' : ''}`);
+    button.setAttribute('aria-current', String(index === current));
+    button.addEventListener('click', () => go(index)); $('question-nav').append(button);
+  });
+}
+function endUI() {
+  clearInterval(interval);
+  if ($('submit-dialog').open) $('submit-dialog').close();
+  showSummary(); render(); $('summary').focus();
+}
+$('start').onclick = () => {
+  engine.start(); $('intro').hidden = true; $('workspace').hidden = false; render(); $('stem').focus();
+  if (exam.mode === 'exam') interval = setInterval(() => { if (engine.tick()) endUI(); else showTimer(); }, 250);
+};
+$('previous').onclick = () => go(current - 1);
+$('next').onclick = () => go(current + 1);
+$('flag').onclick = () => { engine.toggleFlag(current); if (engine.finished) endUI(); else render(); };
+$('confirm').onclick = () => {
+  const accepted = engine.confirm(current);
+  if (engine.finished) endUI();
+  else if (!accepted) $('message').textContent = `Cần chọn đủ ${exam.questions[current].correct_option_ids.length} đáp án trước khi xác nhận.`;
+  else render();
+};
+$('submit').onclick = () => {
+  if (engine.tick()) { endUI(); return; }
+  $('submit-description').textContent = `Còn ${engine.incompleteCount()} câu chưa ${exam.mode === 'practice' ? 'xác nhận' : 'chọn đủ đáp án'}. Sau khi nộp không thể đổi lựa chọn.`;
+  $('submit-dialog').showModal();
+};
+$('cancel-submit').onclick = () => $('submit-dialog').close();
+$('finish-submit').onclick = () => { engine.finish(); endUI(); };
+document.addEventListener('visibilitychange', () => { if (engine.started && !engine.finished && engine.tick()) endUI(); });
+</script>
+</body>
+</html>

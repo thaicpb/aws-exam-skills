@@ -1,0 +1,10 @@
+{
+  "name": "aws-saa-practice-exam-tests",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/quiz-engine.test.cjs",
+    "test:browser": "node --test tests/browser.test.cjs"
+  },
+  "engines": { "node": ">=18" },
+  "devDependencies": { "playwright": "1.62.1" }
+}

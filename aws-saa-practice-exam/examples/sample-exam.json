@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "exam_code": "SAA-C03",
+  "title": "Mẫu luyện tập: IAM role cho EC2",
+  "language": "vi",
+  "mode": "practice",
+  "scope": "focused",
+  "focus": "IAM role cho ứng dụng EC2",
+  "question_count": 1,
+  "questions": [
+    {
+      "id": "iam-ec2-01",
+      "stem": "Ứng dụng EC2 chỉ cần đọc object từ một bucket S3. Công ty không muốn quản lý access key dài hạn. Phương án nào đáp ứng với quyền tối thiểu?",
+      "primary_domain": 1,
+      "task_id": "1.1",
+      "service_tags": [
+        "Amazon EC2",
+        "AWS IAM",
+        "Amazon S3"
+      ],
+      "type": "single",
+      "options": [
+        {
+          "id": "A",
+          "text": "Gắn role qua instance profile, chỉ cấp quyền đọc object cần thiết.",
+          "explanation": "Role cung cấp credential tạm thời, policy giới hạn quyền theo nhu cầu."
+        },
+        {
+          "id": "B",
+          "text": "Lưu access key IAM user trong cấu hình ứng dụng.",
+          "explanation": "Vẫn phải quản lý key dài hạn."
+        },
+        {
+          "id": "C",
+          "text": "Gắn role có quyền quản trị toàn bộ S3.",
+          "explanation": "Role tránh key dài hạn nhưng quyền vượt nhu cầu đọc."
+        },
+        {
+          "id": "D",
+          "text": "Cấp quyền đọc tối thiểu cho IAM user rồi chép key lên EC2.",
+          "explanation": "Quyền hạn phù hợp nhưng vẫn phải phân phối và quản lý key."
+        }
+      ],
+      "correct_option_ids": [
+        "A"
+      ],
+      "sources": [
+        {
+          "title": "IAM roles for Amazon EC2",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html",
+          "verified_on": "2026-09-14"
+        }
+      ]
+    }
+  ]
+}

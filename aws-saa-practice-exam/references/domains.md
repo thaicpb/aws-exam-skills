@@ -3,14 +3,18 @@
 Dùng tài liệu này để giữ cho câu hỏi được tạo ra có nền tảng kỹ thuật chính xác và dàn trải
 đúng phạm vi đề thi thật — thay vì cứ xoay quanh vài dịch vụ quen thuộc mỗi lần. Đây không
 phải danh sách đầy đủ tuyệt đối; hãy dùng nó như một checklist/gợi nhớ, không phải giới hạn
-cứng về những gì có thể xuất hiện.
+cứng về những gì có thể xuất hiện. Danh sách dịch vụ dưới đây là gợi ý biên soạn; phải kiểm tra tài liệu dịch vụ hiện hành trước khi dùng làm đáp án.
+
+Đối chiếu task statement và tỷ trọng: **2026-09-14**. Xem [Exam Guide và phạm vi dịch vụ](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html).
 
 ## Domain 1: Design Secure Architectures (30%)
 
-**Task statement:**
-1. Thiết kế quyền truy cập an toàn vào tài nguyên AWS
-2. Thiết kế workload và ứng dụng an toàn
-3. Xác định các biện pháp kiểm soát bảo mật dữ liệu phù hợp
+Nguồn: [AWS Domain 1](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html).
+
+**Task statement (mã dùng trong JSON):**
+- `1.1` Thiết kế quyền truy cập an toàn vào tài nguyên AWS
+- `1.2` Thiết kế workload và ứng dụng an toàn
+- `1.3` Xác định các biện pháp kiểm soát bảo mật dữ liệu phù hợp
 
 **Dịch vụ/khái niệm nên khai thác:** IAM (role, policy, permission boundary, SCP), AWS
 Organizations, IAM Identity Center, Cognito (user pool vs identity pool), STS/AssumeRole,
@@ -29,9 +33,11 @@ credential/secret một cách an toàn.
 
 ## Domain 2: Design Resilient Architectures (26%)
 
-**Task statement:**
-1. Thiết kế kiến trúc có khả năng mở rộng và liên kết lỏng lẻo (loosely coupled)
-2. Thiết kế kiến trúc có tính sẵn sàng cao và/hoặc chịu lỗi tốt
+Nguồn: [AWS Domain 2](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html).
+
+**Task statement (mã dùng trong JSON):**
+- `2.1` Thiết kế kiến trúc có khả năng mở rộng và liên kết lỏng lẻo (loosely coupled)
+- `2.2` Thiết kế kiến trúc có tính sẵn sàng cao và/hoặc chịu lỗi tốt
 
 **Dịch vụ/khái niệm nên khai thác:** Multi-AZ vs Multi-Region, Auto Scaling Group, các loại
 ELB (ALB/NLB/GWLB) và health check, SQS (standard vs FIFO) và dead-letter queue, SNS,
@@ -48,12 +54,14 @@ traffic tăng đột biến mà không cần can thiệp thủ công, yêu cầu
 
 ## Domain 3: Design High-Performing Architectures (24%)
 
-**Task statement:**
-1. Xác định giải pháp lưu trữ hiệu năng cao và/hoặc có khả năng mở rộng
-2. Thiết kế giải pháp compute hiệu năng cao và co giãn linh hoạt
-3. Xác định giải pháp database hiệu năng cao
-4. Xác định kiến trúc mạng hiệu năng cao và/hoặc có khả năng mở rộng
-5. Xác định giải pháp thu thập và xử lý dữ liệu hiệu năng cao
+Nguồn: [AWS Domain 3](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain3.html).
+
+**Task statement (mã dùng trong JSON):**
+- `3.1` Xác định giải pháp lưu trữ hiệu năng cao và/hoặc có khả năng mở rộng
+- `3.2` Thiết kế giải pháp compute hiệu năng cao và co giãn linh hoạt
+- `3.3` Xác định giải pháp database hiệu năng cao
+- `3.4` Xác định kiến trúc mạng hiệu năng cao và/hoặc có khả năng mở rộng
+- `3.5` Xác định giải pháp thu thập và xử lý dữ liệu hiệu năng cao
 
 **Dịch vụ/khái niệm nên khai thác:** các storage class của S3 và lifecycle policy, S3 Transfer
 Acceleration, EFS vs FSx (cho Windows/Lustre/NetApp) vs instance store vs các loại EBS
@@ -61,7 +69,7 @@ Acceleration, EFS vs FSx (cho Windows/Lustre/NetApp) vs instance store vs các l
 Plans vs On-Demand, Lambda vs container (ECS/Fargate/EKS) cho compute co giãn linh hoạt,
 DynamoDB DAX, RDS read replica và Aurora để scale read, ElastiCache (Redis vs Memcached),
 Redshift, CloudFront (caching behavior, loại origin), Global Accelerator, Direct Connect vs
-Site-to-Site VPN, VPC peering vs Transit Gateway, Kinesis (Data Streams/Firehose/Analytics) vs
+Site-to-Site VPN, VPC peering vs Transit Gateway, Kinesis Data Streams và các dịch vụ phân phối/phân tích streaming (kiểm tra tên hiện hành trong tài liệu AWS) vs
 Glue vs EMR cho việc thu thập/ETL dữ liệu.
 
 **Các kiểu tình huống thường gặp:** giảm độ trễ cho người dùng phân tán toàn cầu, chọn đúng
@@ -71,11 +79,13 @@ hiệu quả.
 
 ## Domain 4: Design Cost-Optimized Architectures (20%)
 
-**Task statement:**
-1. Thiết kế giải pháp lưu trữ tối ưu chi phí
-2. Thiết kế giải pháp compute tối ưu chi phí
-3. Thiết kế giải pháp database tối ưu chi phí
-4. Thiết kế kiến trúc mạng tối ưu chi phí
+Nguồn: [AWS Domain 4](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain4.html).
+
+**Task statement (mã dùng trong JSON):**
+- `4.1` Thiết kế giải pháp lưu trữ tối ưu chi phí
+- `4.2` Thiết kế giải pháp compute tối ưu chi phí
+- `4.3` Thiết kế giải pháp database tối ưu chi phí
+- `4.4` Thiết kế kiến trúc mạng tối ưu chi phí
 
 **Dịch vụ/khái niệm nên khai thác:** chuyển đổi lifecycle của S3 sang IA/Glacier/Deep Archive,
 S3 Intelligent-Tiering, Compute Savings Plans vs Reserved Instances vs Spot, right-sizing bằng

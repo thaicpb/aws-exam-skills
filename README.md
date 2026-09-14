@@ -1,37 +1,31 @@
 # aws-exam-skills
 
-Bộ sưu tập các skill của Claude để tạo và chạy đề ôn luyện tương tác cho các chứng chỉ AWS.
-Mỗi chứng chỉ có một skill riêng, cài đặt độc lập với nhau.
+Bộ skill tạo và chạy đề ôn chứng chỉ AWS. Mỗi skill được đóng gói độc lập với hướng dẫn, nguồn tham chiếu và công cụ cần thiết.
 
-## Danh sách skill
-
-| Skill | Chứng chỉ | Trạng thái |
+| Skill | Chứng chỉ | Khả năng |
 |---|---|---|
-| [`aws-saa-practice-exam`](./aws-saa-practice-exam) | Solutions Architect - Associate (SAA-C03) | Sẵn sàng |
+| [aws-saa-practice-exam](aws-saa-practice-exam/README.md) | Solutions Architect – Associate (SAA-C03) | Quiz luyện tập, mô phỏng thi, JSON validator và HTML offline |
 
-Các chứng chỉ khác (ví dụ Cloud Practitioner, Developer Associate, SysOps Administrator) có
-thể được thêm vào dưới dạng thư mục ngang hàng, theo cùng một khuôn mẫu.
+## Sử dụng
+
+Đưa thư mục `aws-saa-practice-exam/` vào cơ chế nạp skill của môi trường agent đang dùng, hoặc yêu cầu agent đọc `aws-saa-practice-exam/SKILL.md`. Cách đăng ký/cài skill tùy nền tảng; không cần công cụ widget riêng để sinh HTML.
+
+Xem [README của skill](aws-saa-practice-exam/README.md) để cài dependency Python, build mẫu và chạy kiểm thử. Bộ này chưa cung cấp ngân hàng đề đầy đủ: agent soạn và kiểm chứng câu hỏi trước khi builder đóng gói.
 
 ## Cấu trúc
 
-Mỗi thư mục skill độc lập và tuân theo định dạng skill của Claude:
-
+```text
+aws-saa-practice-exam/
+├── SKILL.md
+├── README.md
+├── references/          # Luật thi, domain/task, checklist chất lượng
+├── schemas/             # Hợp đồng dữ liệu JSON
+├── scripts/             # Validator và builder
+├── assets/              # Template HTML, máy trạng thái JS
+├── examples/            # JSON mẫu có nguồn
+├── tests/               # Kiểm tra Python, Node và trình duyệt
+├── requirements.txt     # Dependency build/validation
+└── package.json         # Dependency kiểm thử trình duyệt
 ```
-<tên-skill>/
-├── SKILL.md          — hướng dẫn hoạt động của skill (bắt buộc)
-├── README.md         — tóm tắt cho người đọc về chức năng của skill
-└── references/        — tài liệu bổ trợ mà skill đọc khi cần
-```
 
-## Cài đặt một skill
-
-Tải hoặc clone repo này, sau đó trỏ Claude (claude.ai, Claude Code, hoặc Cowork) vào đúng
-thư mục skill muốn cài — ví dụ `aws-saa-practice-exam/`. README riêng của từng skill có ví dụ
-sử dụng cụ thể.
-
-## Thêm skill cho chứng chỉ mới
-
-1. Tạo một thư mục mới đặt tên theo skill, ví dụ `aws-clf-practice-exam/`.
-2. Viết `SKILL.md`, `README.md`, và các file `references/` cần thiết riêng cho skill đó (tỷ
-   trọng domain của kỳ thi, dịch vụ chính theo từng domain, hướng dẫn phong cách câu hỏi).
-3. Thêm một dòng vào bảng ở trên.
+Để thêm chứng chỉ khác, tạo thư mục ngang hàng và cung cấp nguồn luật thi, schema, phân bổ domain, ví dụ và kiểm thử tương ứng. Không dùng nguyên cấu hình SAA-C03 cho chứng chỉ khác.
